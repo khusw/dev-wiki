@@ -24,12 +24,12 @@ public class Comment {
     private String text;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "post_id")
+    @JoinColumn(name = "postId", referencedColumnName = "postId")
     private Post post;
 
     private Instant createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     private User user;
 }
