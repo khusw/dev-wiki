@@ -5,6 +5,7 @@ import com.wiki.dev.entity.User;
 import com.wiki.dev.entity.VerificationToken;
 import com.wiki.dev.repository.UserRepository;
 import com.wiki.dev.repository.VerificationTokenRepository;
+import com.wiki.dev.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +23,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final MailContentBuilder mailContentBuilder;
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
@@ -34,7 +36,9 @@ public class AuthService {
 
         userRepository.save(user);
 
-        generateVerificationToken(user);
+        String token = generateVerificationToken(user);
+        String message = mailContentBuilder.build("Thank you for signing up to Dev-Wiki, " +
+                "Please click on the below url to activate your account : " + Constants.ACTIVATION_EMAIL + " / " + token);
     }
 
     private String generateVerificationToken(User user) {
