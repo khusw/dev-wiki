@@ -1,8 +1,10 @@
 package com.wiki.dev.service;
 
 import com.wiki.dev.dto.RegisterRequest;
+import com.wiki.dev.entity.NotificationEmail;
 import com.wiki.dev.entity.User;
 import com.wiki.dev.entity.VerificationToken;
+import com.wiki.dev.exception.DevWikiException;
 import com.wiki.dev.repository.UserRepository;
 import com.wiki.dev.repository.VerificationTokenRepository;
 import com.wiki.dev.utils.Constants;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,6 +27,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailContentBuilder mailContentBuilder;
+    private final MailService mailService;
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
@@ -39,6 +43,8 @@ public class AuthService {
         String token = generateVerificationToken(user);
         String message = mailContentBuilder.build("Thank you for signing up to Dev-Wiki, " +
                 "Please click on the below url to activate your account : " + Constants.ACTIVATION_EMAIL + " / " + token);
+
+        mailService.sendMail(new NotificationEmail("Please activate your account", user.getEmail(), message));
     }
 
     private String generateVerificationToken(User user) {
@@ -52,5 +58,20 @@ public class AuthService {
 
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
+    }
+
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationTokenOptional = verificationTokenRepository.findByToken(token);
+        verificationTokenOptional.orElseThrow(() -> new DevWikiException("Invalid Token"));
+        fetchUserAndEnable(verificationTokenOptional.get());
+    }
+
+    @Transactional
+    public void fetchUserAndEnable(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new DevWikiException("user not found with username"));
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 }
