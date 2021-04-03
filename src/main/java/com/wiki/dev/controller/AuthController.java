@@ -1,5 +1,7 @@
 package com.wiki.dev.controller;
 
+import com.wiki.dev.dto.AuthenticationResponse;
+import com.wiki.dev.dto.LoginRequest;
 import com.wiki.dev.dto.RegisterRequest;
 import com.wiki.dev.service.AuthService;
 import lombok.AllArgsConstructor;
@@ -24,6 +26,11 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable String token) {
         authService.verifyAccount(token);
         return new ResponseEntity<>("Account Activated Successfully", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 
 }
