@@ -1,5 +1,7 @@
 package com.wiki.dev.service;
 
+import com.wiki.dev.dto.AuthenticationResponse;
+import com.wiki.dev.dto.LoginRequest;
 import com.wiki.dev.dto.RegisterRequest;
 import com.wiki.dev.entity.NotificationEmail;
 import com.wiki.dev.entity.User;
@@ -7,9 +9,14 @@ import com.wiki.dev.entity.VerificationToken;
 import com.wiki.dev.exception.DevWikiException;
 import com.wiki.dev.repository.UserRepository;
 import com.wiki.dev.repository.VerificationTokenRepository;
+import com.wiki.dev.security.JwtProvider;
 import com.wiki.dev.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +35,8 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
     private final MailContentBuilder mailContentBuilder;
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
@@ -73,5 +82,16 @@ public class AuthService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new DevWikiException("user not found with username"));
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    public AuthenticationResponse login(LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String authenticationToken = jwtProvider.generateToken(authentication);
+
+        return new AuthenticationResponse(authenticationToken, loginRequest.getUsername());
     }
 }
