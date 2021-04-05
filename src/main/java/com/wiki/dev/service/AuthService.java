@@ -71,15 +71,14 @@ public class AuthService {
 
     public void verifyAccount(String token) {
         Optional<VerificationToken> verificationTokenOptional = verificationTokenRepository.findByToken(token);
-        verificationTokenOptional.orElseThrow(() -> new DevWikiException("Invalid Token"));
-        fetchUserAndEnable(verificationTokenOptional.get());
+        fetchUserAndEnable(verificationTokenOptional.orElseThrow(() -> new DevWikiException("Invalid Token")));
     }
 
     @Transactional
     public void fetchUserAndEnable(VerificationToken verificationToken) {
         String username = verificationToken.getUser().getUsername();
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new DevWikiException("user not found with username"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new DevWikiException("user not found with username : " + username));
         user.setEnabled(true);
         userRepository.save(user);
     }
