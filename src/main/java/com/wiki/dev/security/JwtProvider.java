@@ -1,6 +1,8 @@
 package com.wiki.dev.security;
 
 import com.wiki.dev.exception.DevWikiException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -21,12 +23,15 @@ public class JwtProvider {
     @Value("${jks.password}")
     private String keyStorePassword;
 
+    private JwtParser jwtParser;
+
     @PostConstruct
     public void init() {
         try {
             keyStore = KeyStore.getInstance("JKS");
             InputStream resourceAsStream = getClass().getResourceAsStream("/dev-wiki.jks");
             keyStore.load(resourceAsStream, keyStorePassword.toCharArray());
+            jwtParser = Jwts.parserBuilder().setSigningKey(getPublicKey()).build();
         } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
             throw new DevWikiException("Exception occurred while loading keystore : " + e);
         }
@@ -43,5 +48,23 @@ public class JwtProvider {
         } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
             throw new DevWikiException("Exception occurred while retrieving public key from keystore : " + e);
         }
+    }
+
+    public boolean validateToken(String jwt) {
+        jwtParser.parseClaimsJws(jwt);
+        return true;
+    }
+
+    private PublicKey getPublicKey() {
+        try {
+            return keyStore.getCertificate("dev-wiki").getPublicKey();
+        } catch (KeyStoreException e) {
+            throw new DevWikiException("Exception occurred while retrieving public key from keyStore : " + e);
+        }
+    }
+
+    public String getUsernameFromJWT(String token) {
+        Claims claims = jwtParser.parseClaimsJws(token).getBody();
+        return claims.getSubject();
     }
 }
