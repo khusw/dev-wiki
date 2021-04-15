@@ -21,5 +21,6 @@ public interface CategoryMapper {
 
     @InheritInverseConfiguration
     @Mapping(target = "posts", ignore = true)
+    @Mapping(target = "createdDate", expression = "java(java.time.Instant.now())")
     Category mapDtoToCategory(CategoryDto categoryDto);
 }
