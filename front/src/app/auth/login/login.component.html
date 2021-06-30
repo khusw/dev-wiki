@@ -3,7 +3,9 @@
     <div class="col-md-3"></div>
     <div class="col-md-6">
       <div class="card">
-        <div class="card-header" style="text-align: center"><h4>Login</h4></div>
+        <div class="card-header" style="text-align: center">
+          <h4>로그인</h4>
+        </div>
         <div class="card-body">
           <form [formGroup]="loginForm" (ngSubmit)="login()">
             <div class="form-group row">
@@ -26,7 +28,14 @@
             <div class="form-group row">
               <label for="password" class="col-md-4 col-form-label text-md-right">Password</label>
               <div class="col-md-6">
-                <input type="password" id="password" class="form-control" [formControlName]="'password'" name="password" required>
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  [formControlName]="'password'"
+                  name="password"
+                  required
+                />
                 <span *ngIf="!loginForm.get('password').valid && loginForm.get('password').touched">
                   잘못된 비밀번호입니다.
                 </span>
@@ -37,16 +46,10 @@
               <button type="submit" class="login">
                 로그인
               </button>
-              <span style="padding-left: 15px">
-                New User?
-                <a routerLink="/signup">회원가입</a>
-              </span>
+              <span style="padding-left: 15px">새 계정 생성: <a routerLink="/sign-up">회원가입</a></span>
             </span>
             <div class="login-failed" *ngIf='this.isError'>
-              <p class="login-failed-text">Login Failed. Please check your credentials and try again.</p>
-            </div>
-            <div class="login-failed" [ngStyle]="{'background-color': 'green'}" *ngIf="this.registerSuccessMessage.length > 0">
-              <p class="register-success-text">{{registerSuccessMessage}}</p>
+              <p class="login-failed-text">로그인 실패했습니다 다시 시도해 주세요</p>
             </div>
           </form>
         </div>
