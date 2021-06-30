@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {FormGroup, FormControl, Validators} from '@angular/forms'
+import { FormGroup, FormControl, Validators } from '@angular/forms'
+import { SignupRequestPayload } from "./signup-request.payload";
+import { AuthService } from "../shared/auth.service";
 
 @Component({
   selector: 'app-signup',
@@ -8,15 +10,34 @@ import {FormGroup, FormControl, Validators} from '@angular/forms'
 })
 export class SignupComponent implements OnInit {
 
-  signupForm: FormGroup
+  signupRequestPayload: SignupRequestPayload;
+  signupForm: FormGroup;
 
-  constructor() { }
+  constructor(private authService: AuthService) {
+    this.signupRequestPayload = {
+      email: '',
+      username: '',
+      password: ''
+    }
+  }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.signupForm = new FormGroup({ // signupForm 멤버 변수 초기화
-      username: new FormControl(null, Validators.required), // 검증을 위한 작업 추가
-      email: new FormControl(null, [Validators.required, Validators.email]),
-      password: new FormControl(null, Validators.required)
+      username: new FormControl('', Validators.required), // 검증을 위한 작업 추가
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required)
+    })
+  }
+
+  signup() {
+    this.signupRequestPayload.email = this.signupForm.get("email").value;
+    this.signupRequestPayload.username = this.signupForm.get("username").value;
+    this.signupRequestPayload.password = this.signupForm.get("password").value;
+
+    this.authService.signup(this.signupRequestPayload).subscribe(() => {
+      console.log("Signup Successful");
+    }, () => {
+      console.log("Signup Failed");
     })
   }
 

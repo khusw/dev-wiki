@@ -54,7 +54,7 @@ public class AuthService {
 
         String token = generateVerificationToken(user);
         String message = mailContentBuilder.build("Thank you for signing up to Dev-Wiki, " +
-                "Please click on the below url to activate your account : " + Constants.ACTIVATION_EMAIL + " / " + token);
+                "Please click on the below url to activate your account : " + Constants.ACTIVATION_EMAIL + "/" + token);
 
         mailService.sendMail(new NotificationEmail("Please activate your account", user.getEmail(), message));
     }
