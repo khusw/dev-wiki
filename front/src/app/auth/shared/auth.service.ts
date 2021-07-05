@@ -35,7 +35,7 @@ export class AuthService {
       username: this.getUsername()
     }
 
-    return this.httpClient.post<LoginResponsePayload>("http://localhost:8080/api/auth/refreshtoken", refreshTokenPayload)
+    return this.httpClient.post<LoginResponsePayload>("http://localhost:8080/api/auth/refresh/token", refreshTokenPayload)
       .pipe(tap((response) => {
         this.localStorage.store("authenticationToken", response.authenticationToken);
         this.localStorage.store("expiresAt", response.expiresAt);
