@@ -4,7 +4,7 @@ import { SignupRequestPayload } from "../signup/signup-request.payload";
 import { Observable } from "rxjs";
 import { LocalStorageService } from "ngx-webstorage";
 import { LoginRequestPayload } from "../login/login-request.payload";
-import { map } from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
 import { LoginResponsePayload } from "../login/login-response.payload";
 
 @Injectable({
@@ -12,14 +12,14 @@ import { LoginResponsePayload } from "../login/login-response.payload";
 })
 export class AuthService {
 
-  constructor(private http: HttpClient, private localStorage: LocalStorageService) { }
+  constructor(private httpClient: HttpClient, private localStorage: LocalStorageService) { }
 
   signup(signupRequestPayload: SignupRequestPayload): Observable<any> {
-    return this.http.post("http://localhost:8080/api/auth/signup", signupRequestPayload, { responseType: 'text' });
+    return this.httpClient.post("http://localhost:8080/api/auth/signup", signupRequestPayload, { responseType: 'text' });
   }
 
   login(loginRequestPayload: LoginRequestPayload): Observable<boolean> {
-    return this.http.post<LoginResponsePayload>("http://localhost:8080/api/auth/login", loginRequestPayload)
+    return this.httpClient.post<LoginResponsePayload>("http://localhost:8080/api/auth/login", loginRequestPayload)
       .pipe(map(data => {
         this.localStorage.store('authenticationToken', data.authenticationToken);
         this.localStorage.store('username', data.username);
@@ -27,5 +27,34 @@ export class AuthService {
         this.localStorage.store('expiresAt', data.expiresAt);
         return true;
       }));
+  }
+
+  refreshToken() {
+    const refreshTokenPayload = {
+      refreshToken: this.getRefreshToken(),
+      username: this.getUsername()
+    }
+
+    return this.httpClient.post<LoginResponsePayload>("http://localhost:8080/api/auth/refreshtoken", refreshTokenPayload)
+      .pipe(tap((response) => {
+        this.localStorage.store("authenticationToken", response.authenticationToken);
+        this.localStorage.store("expiresAt", response.expiresAt);
+    }));
+  }
+
+  getJWTToken() {
+    return this.localStorage.retrieve("authenticationToken");
+  }
+
+  getRefreshToken() {
+    return this.localStorage.retrieve("refreshToken");
+  }
+
+  getUsername() {
+    return this.localStorage.retrieve("username");
+  }
+
+  getExpirationTime() {
+    return this.localStorage.retrieve("expiresAt");
   }
 }

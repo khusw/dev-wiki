@@ -13,7 +13,7 @@ public class MailContentBuilder {
 
     String build(String message) {
         Context context = new Context();
-        context.setVariable("message", message);
+        context.setVariable("link", message);
         return templateEngine.process("mailTemplate", context);
     }
 }

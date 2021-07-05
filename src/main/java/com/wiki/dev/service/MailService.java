@@ -17,22 +17,22 @@ import org.springframework.stereotype.Service;
 public class MailService {
 
     private final JavaMailSender mailSender;
-    private final MailContentBuilder mailContentBuilder;
 
     @Async
     void sendMail(NotificationEmail notificationEmail) {
         MimeMessagePreparator messagePreparator = mimeMessage -> {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             messageHelper.setFrom("dev-wiki@email.com");
             messageHelper.setTo(notificationEmail.getRecipient());
             messageHelper.setSubject(notificationEmail.getSubject());
-            messageHelper.setText(notificationEmail.getBody());
+            messageHelper.setText(notificationEmail.getBody(), true);
         };
 
         try {
             mailSender.send(messagePreparator);
             log.info("activation email sent");
         } catch (MailException e) {
+            log.error(String.valueOf(e));
             throw new DevWikiException("Exception occurred when sending email to " + notificationEmail.getRecipient());
         }
     }
