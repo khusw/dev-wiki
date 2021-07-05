@@ -35,7 +35,7 @@ public class PostController {
         return status(HttpStatus.OK).body(postService.getPost(id));
     }
 
-    @GetMapping("by-subreddit/{id}")
+    @GetMapping("by-category/{id}")
     public ResponseEntity<List<PostResponse>> getPostsByCategory(Long id) {
         return status(HttpStatus.OK).body(postService.getPostsByCategory(id));
     }
