@@ -1,0 +1,11 @@
+<div class="sidebar-view-category">
+  <div style="color: black; font-weight: bold">Browse Subreddits</div>
+  <hr />
+  <span *ngFor="let category of categories">
+        <span class="category-text"><a href="/view-category/{{category.id}}">{{category.name}}</a></span>
+        <hr />
+    </span>
+  <div style="text-align: center" *ngIf="displayViewAll">
+    <a style="font-weight: bold" routerLink="/categories">View All</a>
+  </div>
+</div>
