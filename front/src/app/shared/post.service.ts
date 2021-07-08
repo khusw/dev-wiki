@@ -10,6 +10,6 @@ export class PostService {
   constructor(private httpClient: HttpClient) {}
 
   getAllPosts(): Observable<any> {
-    return this.httpClient.get("http://localhost:8080/api/posts/");
+    return this.httpClient.get("http://localhost:8080/api/posts");
   }
 }
