@@ -3,13 +3,18 @@ package com.wiki.dev.mapper;
 import com.github.marlonlom.utilities.timeago.TimeAgo;
 import com.wiki.dev.dto.PostRequest;
 import com.wiki.dev.dto.PostResponse;
-import com.wiki.dev.entity.Category;
-import com.wiki.dev.entity.Post;
-import com.wiki.dev.entity.User;
+import com.wiki.dev.entity.*;
 import com.wiki.dev.repository.CommentRepository;
+import com.wiki.dev.repository.VoteRepository;
+import com.wiki.dev.service.AuthService;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
+
+import static com.wiki.dev.entity.VoteType.DOWNVOTE;
+import static com.wiki.dev.entity.VoteType.UPVOTE;
 
 @Mapper(componentModel = "spring")
 public abstract class PostMapper {
@@ -17,8 +22,13 @@ public abstract class PostMapper {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private VoteRepository voteRepository;
+
+    @Autowired
+    private AuthService authService;
+
     @Mapping(target = "createdDate", expression = "java(java.time.Instant.now())")
-    @Mapping(target = "postName", source = "postRequest.postName")
     @Mapping(target = "category", source = "category")
     @Mapping(target = "user", source = "user")
     @Mapping(target = "description", source = "postRequest.description")
@@ -26,13 +36,12 @@ public abstract class PostMapper {
     public abstract Post map(PostRequest postRequest, Category category, User user);
 
     @Mapping(target = "id", source = "postId")
-    @Mapping(target = "postName", source = "postName")
-    @Mapping(target = "description", source = "description")
-    @Mapping(target = "url", source = "url")
     @Mapping(target = "categoryName", source = "category.name")
     @Mapping(target = "userName", source = "user.username")
     @Mapping(target = "commentCount", expression = "java(commentCount(post))")
     @Mapping(target = "duration", expression = "java(getDuration(post))")
+    @Mapping(target = "upVote", expression = "java(isPostUpVoted(post))")
+    @Mapping(target = "downVote", expression = "java(isPostDownVoted(post))")
     public abstract PostResponse mapToDto(Post post);
 
     Integer commentCount(Post post) {
@@ -41,5 +50,18 @@ public abstract class PostMapper {
 
     String getDuration(Post post) {
         return TimeAgo.using(post.getCreatedDate().toEpochMilli());
+    }
+
+    boolean isPostUpVoted(Post post) { return checkVoteType(post, UPVOTE); }
+
+    boolean isPostDownVoted(Post post) { return checkVoteType(post, DOWNVOTE); }
+
+    private boolean checkVoteType(Post post, VoteType voteType) {
+        if (authService.isLoggedIn()) {
+            Optional<Vote> voteForPostByUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post, authService.getCurrentUser());
+
+            return voteForPostByUser.filter(vote -> vote.getVoteType().equals(voteType)).isPresent();
+        }
+        return false;
     }
 }
