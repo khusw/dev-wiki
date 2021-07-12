@@ -35,11 +35,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/auth/**")
                 .permitAll()
-                .antMatchers(HttpMethod.GET,"/api/category")
+                .antMatchers(HttpMethod.GET,"/api/categories/")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/api/posts")
+                .antMatchers(HttpMethod.GET, "/api/posts/")
                 .permitAll()
-                .antMatchers(HttpMethod.GET, "/api/posts")
+                .antMatchers(HttpMethod.GET, "/api/posts/**")
                 .permitAll()
                 .antMatchers(
                         "/v2/api-docs",
@@ -51,6 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .anyRequest()
                 .authenticated();
+
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
