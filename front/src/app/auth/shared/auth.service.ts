@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
 import { SignupRequestPayload } from "../signup/signup-request.payload";
-import { Observable } from "rxjs";
+import {Observable, throwError} from "rxjs";
 import { LocalStorageService } from "ngx-webstorage";
 import { LoginRequestPayload } from "../login/login-request.payload";
 import {map, tap} from "rxjs/operators";
@@ -11,6 +11,11 @@ import { LoginResponsePayload } from "../login/login-response.payload";
   providedIn: 'root'
 })
 export class AuthService {
+
+  refreshTokenPayload = {
+    refreshToken: this.getRefreshToken(),
+    username: this.getUsername()
+  }
 
   constructor(private httpClient: HttpClient, private localStorage: LocalStorageService) { }
 
@@ -30,13 +35,11 @@ export class AuthService {
   }
 
   refreshToken() {
-    const refreshTokenPayload = {
-      refreshToken: this.getRefreshToken(),
-      username: this.getUsername()
-    }
-
-    return this.httpClient.post<LoginResponsePayload>("http://localhost:8080/api/auth/refresh/token", refreshTokenPayload)
+    return this.httpClient.post<LoginResponsePayload>("http://localhost:8080/api/auth/refresh/token", this.refreshTokenPayload)
       .pipe(tap((response) => {
+        this.localStorage.clear("authenticationToken");
+        this.localStorage.clear("expiresAt");
+
         this.localStorage.store("authenticationToken", response.authenticationToken);
         this.localStorage.store("expiresAt", response.expiresAt);
     }));
@@ -54,7 +57,21 @@ export class AuthService {
     return this.localStorage.retrieve("username");
   }
 
-  getExpirationTime() {
-    return this.localStorage.retrieve("expiresAt");
+  logout() {
+    this.httpClient.post("http://localhost:8080/api/auth/logout", this.refreshTokenPayload, { responseType: "text"})
+      .subscribe(data => {
+        console.log(data);
+        }, error => {
+        throwError(error)
+      })
+
+    this.localStorage.clear("authenticationToken");
+    this.localStorage.clear("username");
+    this.localStorage.clear("refreshToken");
+    this.localStorage.clear("expiresAt");
+  }
+
+  isLoggedIn(): boolean {
+    return this.getJWTToken() !== null;
   }
 }
