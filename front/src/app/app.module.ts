@@ -17,9 +17,14 @@ import { PostTitleComponent } from './shared/post-title/post-title.component';
 import { SideBarComponent } from './shared/side-bar/side-bar.component';
 import { CategorySideBarComponent } from './shared/category-side-bar/category-side-bar.component';
 import { VoteButtonComponent } from './shared/vote-button/vote-button.component';
-import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
+import { FontAwesomeModule } from "@fortawesome/angular-fontawesome";
 import { CreateCategoryComponent } from './category/create-category/create-category.component';
 import { CreatePostComponent } from './post/create-post/create-post.component';
+import { ListCategoriesComponent } from './category/list-categories/list-categories.component';
+import { EditorModule } from "@tinymce/tinymce-angular";
+import { ViewPostComponent } from './post/view-post/view-post.component';
+import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
+import { UserProfileComponent } from './auth/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +38,10 @@ import { CreatePostComponent } from './post/create-post/create-post.component';
     CategorySideBarComponent,
     VoteButtonComponent,
     CreateCategoryComponent,
-    CreatePostComponent
+    CreatePostComponent,
+    ListCategoriesComponent,
+    ViewPostComponent,
+    UserProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -43,7 +51,9 @@ import { CreatePostComponent } from './post/create-post/create-post.component';
     NgxWebstorageModule.forRoot(),
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    FontAwesomeModule
+    FontAwesomeModule,
+    EditorModule,
+    NgbModule
   ],
   providers: [
     {
