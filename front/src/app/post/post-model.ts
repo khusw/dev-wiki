@@ -8,4 +8,6 @@ export class PostModel {
   categoryName: string;
   commentCount: number;
   duration: string;
+  upVote: boolean;
+  downVote: boolean;
 }
