@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from "../auth/shared/auth.service";
+import { Router } from "@angular/router";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 @Component({
   selector: 'app-header',
@@ -7,9 +10,25 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor() { }
+  faUser = faUser;
+  isLoggedIn: boolean;
+  username: string;
+
+  constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
+    this.isLoggedIn = this.authService.isLoggedIn();
+    this.username = this.authService.getUsername();
   }
 
+  goToUserProfile() {
+    this.router.navigateByUrl("/user-profile/" + this.username);
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigateByUrl("").then(() => {
+      window.location.reload();
+    })
+  }
 }
