@@ -13,4 +13,8 @@ export class CategoryService {
   getAllCategories(): Observable<Array<CategoryModel>> {
     return this.httpClient.get<Array<CategoryModel>>("http://localhost:8080/api/categories");
   }
+
+  createCategory(categoryModel: CategoryModel): Observable<any> {
+    return this.httpClient.post("http://localhost:8080/api/categories", categoryModel);
+  }
 }
