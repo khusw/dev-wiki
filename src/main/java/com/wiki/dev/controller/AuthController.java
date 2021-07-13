@@ -21,16 +21,16 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
 
-    @PostMapping("/signup")
+    @PostMapping(value = "/signup", produces = "application/json; charset=UTF-8;")
     public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
         authService.signup(registerRequest);
-        return new ResponseEntity<>("User registration successful",HttpStatus.OK);
+        return new ResponseEntity<>("회원가입 성공",HttpStatus.OK);
     }
 
-    @GetMapping("/accountVerification/{token}")
+    @GetMapping(value = "/accountVerification/{token}", produces = "application/json; charset=UTF-8;")
     public ResponseEntity<String> verifyAccount(@PathVariable String token) {
         authService.verifyAccount(token);
-        return new ResponseEntity<>("Account Activated Successfully", HttpStatus.OK);
+        return new ResponseEntity<>("계정 활성화 성공", HttpStatus.OK);
     }
 
     @PostMapping("/login")
