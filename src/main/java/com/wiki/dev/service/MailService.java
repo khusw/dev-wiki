@@ -1,6 +1,6 @@
 package com.wiki.dev.service;
 
-import com.wiki.dev.entity.NotificationEmail;
+import com.wiki.dev.dto.NotificationEmail;
 import com.wiki.dev.exception.DevWikiException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

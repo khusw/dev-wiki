@@ -1,4 +1,4 @@
-package com.wiki.dev.entity;
+package com.wiki.dev.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
