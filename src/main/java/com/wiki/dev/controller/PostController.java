@@ -2,6 +2,7 @@ package com.wiki.dev.controller;
 
 import com.wiki.dev.dto.PostRequest;
 import com.wiki.dev.dto.PostResponse;
+import com.wiki.dev.entity.Post;
 import com.wiki.dev.service.PostService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,28 +21,32 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<Void> createPost(@RequestBody PostRequest postRequest) {
-        postService.save(postRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public Post createPost(@RequestBody PostRequest postRequest) {
+        return postService.save(postRequest);
     }
 
     @GetMapping
-    public ResponseEntity<List<PostResponse>> getAllPosts() {
-        return status(HttpStatus.OK).body(postService.getAllPosts());
+    public List<PostResponse> getAllPosts() {
+        return postService.getAllPosts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponse> getPost(@PathVariable Long id) {
-        return status(HttpStatus.OK).body(postService.getPost(id));
+    public PostResponse getPost(@PathVariable Long id) {
+        return postService.getPost(id);
     }
 
     @GetMapping("by-category/{id}")
-    public ResponseEntity<List<PostResponse>> getPostsByCategory(Long id) {
-        return status(HttpStatus.OK).body(postService.getPostsByCategory(id));
+    public List<PostResponse> getPostsByCategory(@PathVariable Long id) {
+        return postService.getPostsByCategory(id);
     }
 
     @GetMapping("by-user/{name}")
-    public ResponseEntity<List<PostResponse>> getPostsByUsername(String username) {
-        return status(HttpStatus.OK).body(postService.getPostsByUsername(username));
+    public List<PostResponse> getPostsByUsername(@PathVariable String name) {
+        return postService.getPostsByUsername(name);
+    }
+
+    @PatchMapping
+    public PostResponse updatePostById(@RequestBody PostRequest postRequest) {
+        return postService.updatePostById(postRequest);
     }
 }

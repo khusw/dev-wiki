@@ -40,6 +40,6 @@ public class Post {
     private Instant createdDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "id")
+    @JoinColumn(name = "categoryId", referencedColumnName = "categoryId")
     private Category category;
 }
