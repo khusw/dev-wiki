@@ -52,9 +52,9 @@ public class JwtProvider {
                 .compact();
     }
 
-    public String generateTokenWithUserName(String username) {
+    public String generateTokenWithEmail(String email) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(email)
                 .setIssuedAt(Date.from(Instant.now()))
                 .signWith(getPrivateKey())
                 .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
@@ -82,7 +82,7 @@ public class JwtProvider {
         }
     }
 
-    public String getUsernameFromJWT(String token) {
+    public String getEmailFromJWT(String token) {
         Claims claims = jwtParser.parseClaimsJws(token).getBody();
         return claims.getSubject();
     }

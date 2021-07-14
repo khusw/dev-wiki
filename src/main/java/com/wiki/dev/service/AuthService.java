@@ -4,7 +4,7 @@ import com.wiki.dev.dto.AuthenticationResponse;
 import com.wiki.dev.dto.LoginRequest;
 import com.wiki.dev.dto.RefreshTokenRequest;
 import com.wiki.dev.dto.RegisterRequest;
-import com.wiki.dev.entity.NotificationEmail;
+import com.wiki.dev.dto.NotificationEmail;
 import com.wiki.dev.entity.User;
 import com.wiki.dev.entity.VerificationToken;
 import com.wiki.dev.exception.DevWikiException;
@@ -44,10 +44,14 @@ public class AuthService {
 
     @Transactional
     public void signup(RegisterRequest registerRequest) {
+        String email = registerRequest.getEmail();
+        int endIdx = email.indexOf("@");
+        String defaultUsername= email.substring(0, endIdx);
+
         User user = new User();
-        user.setUsername(registerRequest.getUsername());
+        user.setUsername(defaultUsername);
         user.setPassword(encodePassword(registerRequest.getPassword()));
-        user.setEmail(registerRequest.getEmail());
+        user.setEmail(email);
         user.setCreated(Instant.now());
         user.setEnabled(false);
 
@@ -57,7 +61,7 @@ public class AuthService {
         String link = Constants.ACTIVATION_EMAIL + "/" + token;
         String message = mailContentBuilder.build(link);
 
-        mailService.sendMail(new NotificationEmail("Please activate your account", user.getEmail(), message));
+        mailService.sendMail(new NotificationEmail("계정 활성화를 진행해주세요.", email, message));
     }
 
     private String generateVerificationToken(User user) {
@@ -80,45 +84,46 @@ public class AuthService {
 
     @Transactional
     public void fetchUserAndEnable(VerificationToken verificationToken) {
-        String username = verificationToken.getUser().getUsername();
-
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new DevWikiException("user not found with username : " + username));
+        String email = verificationToken.getUser().getEmail();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new DevWikiException("user not found with : " + email));
         user.setEnabled(true);
         userRepository.save(user);
     }
 
     public AuthenticationResponse login(LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         String authenticationToken = jwtProvider.generateToken(authentication);
 
         return AuthenticationResponse.builder()
                 .authenticationToken(authenticationToken)
                 .refreshToken(refreshTokenService.generateRefreshToken().getToken())
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
-                .username(loginRequest.getUsername())
+                .email(loginRequest.getEmail())
                 .build();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public User getCurrentUser() {
         org.springframework.security.core.userdetails.User principal
                 = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return userRepository.findByUsername(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException("Username not found : " + principal.getUsername()));
+        return userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found with : " + principal.getUsername()));
     }
 
     public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
         refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
-        String token = jwtProvider.generateTokenWithUserName(refreshTokenRequest.getUsername());
+        String token = jwtProvider.generateTokenWithEmail(refreshTokenRequest.getEmail());
+
         return AuthenticationResponse.builder()
                 .authenticationToken(token)
                 .refreshToken(refreshTokenRequest.getRefreshToken())
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
-                .username(refreshTokenRequest.getUsername())
+                .email(refreshTokenRequest.getEmail())
                 .build();
     }
 
