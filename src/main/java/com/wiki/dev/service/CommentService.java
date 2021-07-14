@@ -2,7 +2,7 @@ package com.wiki.dev.service;
 
 import com.wiki.dev.dto.CommentsDto;
 import com.wiki.dev.entity.Comment;
-import com.wiki.dev.entity.NotificationEmail;
+import com.wiki.dev.dto.NotificationEmail;
 import com.wiki.dev.entity.Post;
 import com.wiki.dev.entity.User;
 import com.wiki.dev.exception.PostNotFoundException;
@@ -50,8 +50,8 @@ public class CommentService {
         return commentRepository.findByPost(post).stream().map(commentMapper::mapToDto).collect(Collectors.toList());
     }
 
-    public List<CommentsDto> getCommentsByUser(String userName) {
-        User user = userRepository.findByUsername(userName).orElseThrow(() -> new UsernameNotFoundException("can't find : " + userName));
+    public List<CommentsDto> getCommentsByUser(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("can't find : " + username));
 
         return commentRepository.findAllByUser(user).stream().map(commentMapper::mapToDto).collect(Collectors.toList());
     }

@@ -14,7 +14,7 @@ import static org.springframework.http.ResponseEntity.status;
 @RestController
 @RequestMapping("/api/comments")
 @AllArgsConstructor
-public class CommentsController {
+public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
@@ -28,8 +28,8 @@ public class CommentsController {
         return status(HttpStatus.OK).body(commentService.getCommentByPost(postId));
     }
 
-    @GetMapping("/by-user/{userName}")
-    public ResponseEntity<List<CommentsDto>> getAllCommentsForUser(@PathVariable String userName) {
-        return status(HttpStatus.OK).body(commentService.getCommentsByUser(userName));
+    @GetMapping("/by-user/{username}")
+    public ResponseEntity<List<CommentsDto>> getAllCommentsForUser(@PathVariable String username) {
+        return status(HttpStatus.OK).body(commentService.getCommentsByUser(username));
     }
 }
