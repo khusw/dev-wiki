@@ -90,4 +90,9 @@ public class PostService {
 
         return postMapper.mapToDto(post);
     }
+
+    @Transactional
+    public void deletePostById(Long id) {
+        postRepository.deleteById(id);
+    }
 }

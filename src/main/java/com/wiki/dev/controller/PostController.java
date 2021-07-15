@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.ResponseEntity.status;
-
 @RestController
 @RequestMapping("/api/posts")
 @AllArgsConstructor
@@ -48,5 +46,11 @@ public class PostController {
     @PatchMapping
     public PostResponse updatePostById(@RequestBody PostRequest postRequest) {
         return postService.updatePostById(postRequest);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletePostByID(@PathVariable Long id) {
+        postService.deletePostById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
