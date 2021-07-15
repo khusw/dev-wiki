@@ -1,4 +1,4 @@
 export interface LoginRequestPayload{
-  username: string;
+  email: string;
   password: string;
 }

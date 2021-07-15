@@ -9,17 +9,17 @@
         <div class="card-body">
           <form [formGroup]="loginForm" (ngSubmit)="login()">
             <div class="form-group row">
-              <label for="user_name" class="col-md-4 col-form-label text-md-right">Username</label>
+              <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
               <div class="col-md-6">
                 <input
                   type="text"
-                  id="user_name"
+                  id="email"
                   class="form-control"
-                  [formControlName]="'username'"
-                  name="user_name"
+                  [formControlName]="'email'"
+                  name="email"
                   required autofocus
                 />
-                <span *ngIf="!loginForm.get('username').valid && loginForm.get('username').touched">
+                <span *ngIf="!loginForm.get('email').valid && loginForm.get('email').touched">
                   잘못된 이름입니다.
                 </span>
               </div>
@@ -46,7 +46,7 @@
               <button type="submit" class="login">
                 로그인
               </button>
-              <span style="padding-left: 15px">새 계정 생성: <a routerLink="/sign-up">회원가입</a></span>
+              <span style="padding-left: 15px">새 계정 생성: <a routerLink="/signup">회원가입</a></span>
             </span>
             <div class="login-failed" *ngIf='this.isError'>
               <p class="login-failed-text">로그인 실패했습니다 다시 시도해 주세요</p>
