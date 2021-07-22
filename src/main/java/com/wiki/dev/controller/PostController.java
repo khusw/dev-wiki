@@ -1,15 +1,13 @@
 package com.wiki.dev.controller;
 
 import com.wiki.dev.dto.PostRequest;
-import com.wiki.dev.dto.PostResponse;
-import com.wiki.dev.entity.Post;
 import com.wiki.dev.service.PostService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -19,38 +17,37 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public Post createPost(@RequestBody PostRequest postRequest) {
-        return postService.save(postRequest);
+    public ResponseEntity<Map<Object, Object>> createPost(@RequestBody @Valid PostRequest postRequest) {
+        return postService.createPost(postRequest);
     }
 
     @GetMapping
-    public List<PostResponse> getAllPosts() {
+    public ResponseEntity<Map<Object, Object>> getAllPosts() {
         return postService.getAllPosts();
     }
 
     @GetMapping("/{id}")
-    public PostResponse getPost(@PathVariable Long id) {
-        return postService.getPost(id);
+    public ResponseEntity<Map<Object, Object>> getPostById(@PathVariable Long id) {
+        return postService.getPostById(id);
     }
 
     @GetMapping("by-category/{id}")
-    public List<PostResponse> getPostsByCategory(@PathVariable Long id) {
+    public ResponseEntity<Map<Object, Object>> getPostsByCategory(@PathVariable Long id) {
         return postService.getPostsByCategory(id);
     }
 
     @GetMapping("by-user/{name}")
-    public List<PostResponse> getPostsByUsername(@PathVariable String name) {
+    public ResponseEntity<Map<Object, Object>> getPostsByUsername(@PathVariable String name) {
         return postService.getPostsByUsername(name);
     }
 
     @PatchMapping
-    public PostResponse updatePostById(@RequestBody PostRequest postRequest) {
+    public ResponseEntity<Map<Object, Object>> updatePostById(@RequestBody @Valid PostRequest postRequest) {
         return postService.updatePostById(postRequest);
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deletePostByID(@PathVariable Long id) {
-        postService.deletePostById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Map<Object, Object>> deletePostById(@PathVariable Long id) {
+        return postService.deletePostById(id);
     }
 }

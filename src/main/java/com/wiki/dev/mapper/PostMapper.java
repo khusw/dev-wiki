@@ -33,7 +33,7 @@ public abstract class PostMapper {
     @Mapping(target = "user", source = "user")
     @Mapping(target = "description", source = "postRequest.description")
     @Mapping(target = "voteCount", constant = "0")
-    public abstract Post map(PostRequest postRequest, Category category, User user);
+    public abstract Post mapToPost(PostRequest postRequest, Category category, User user);
 
     @Mapping(target = "categoryName", source = "category.name")
     @Mapping(target = "userName", source = "user.username")
@@ -41,7 +41,7 @@ public abstract class PostMapper {
     @Mapping(target = "duration", expression = "java(getDuration(post))")
     @Mapping(target = "upVote", expression = "java(isPostUpVoted(post))")
     @Mapping(target = "downVote", expression = "java(isPostDownVoted(post))")
-    public abstract PostResponse mapToDto(Post post);
+    public abstract PostResponse mapPostToDto(Post post);
 
     Integer commentCount(Post post) {
         return commentRepository.findByPost(post).size();
