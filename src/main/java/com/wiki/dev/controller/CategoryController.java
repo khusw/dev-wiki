@@ -3,10 +3,11 @@ package com.wiki.dev.controller;
 import com.wiki.dev.dto.CategoryDto;
 import com.wiki.dev.service.CategoryService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/categories")
@@ -16,17 +17,27 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<CategoryDto> getAllCategories() {
-        return categoryService.getAll();
+    public ResponseEntity<Map<Object, Object>> getAllCategories() {
+        return categoryService.getAllCategories();
     }
 
     @GetMapping("/{id}")
-    public CategoryDto getCategory(@PathVariable Long id) {
-        return categoryService.getCategory(id);
+    public ResponseEntity<Map<Object, Object>> getCategoryById(@PathVariable Long id) {
+        return categoryService.getCategoryById(id);
     }
 
     @PostMapping
-    public CategoryDto create(@RequestBody @Valid CategoryDto categoryDto) {
-        return categoryService.save(categoryDto);
+    public ResponseEntity<Map<Object, Object>> createCategory(@RequestBody @Valid CategoryDto categoryDto) {
+        return categoryService.createCategory(categoryDto);
+    }
+
+    @PatchMapping
+    public ResponseEntity<Map<Object, Object>> updateCategory(@RequestBody @Valid CategoryDto categoryDto) {
+        return categoryService.updateCategory(categoryDto);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Map<Object, Object>> deleteCategory(@RequestBody @Valid CategoryDto categoryDto) {
+        return categoryService.deleteCategory(categoryDto);
     }
 }
