@@ -2,6 +2,7 @@ package com.wiki.dev.service;
 
 import com.wiki.dev.dto.VoteDto;
 import com.wiki.dev.entity.Post;
+import com.wiki.dev.entity.User;
 import com.wiki.dev.entity.Vote;
 import com.wiki.dev.exception.DevWikiException;
 import com.wiki.dev.exception.PostNotFoundException;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.wiki.dev.entity.VoteType.UPVOTE;
@@ -27,7 +29,10 @@ public class VoteService {
     public void vote(VoteDto voteDto) {
         Post post = postRepository.findById(voteDto.getPostId())
                 .orElseThrow(() -> new PostNotFoundException("Post not found with ID : " + voteDto.getPostId()));
-        Optional<Vote> voteByPostAndUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post, authService.getCurrentUser());
+
+        User user = (User) Objects.requireNonNull(authService.getCurrentUser().getBody()).get("data");
+
+        Optional<Vote> voteByPostAndUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post, user);
 
         if (voteByPostAndUser.isPresent() && voteByPostAndUser.get().getVoteType().equals(voteDto.getVoteType())) {
             throw new DevWikiException("you have already " + voteDto.getVoteType() + " for this post");
@@ -41,6 +46,8 @@ public class VoteService {
     }
 
     private Vote mapToVote(VoteDto voteDto, Post post) {
-        return Vote.builder().voteType(voteDto.getVoteType()).post(post).user(authService.getCurrentUser()).build();
+        User user = (User) Objects.requireNonNull(authService.getCurrentUser().getBody()).get("data");
+
+        return Vote.builder().voteType(voteDto.getVoteType()).post(post).user(user).build();
     }
 }
