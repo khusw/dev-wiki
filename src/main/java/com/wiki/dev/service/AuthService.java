@@ -14,17 +14,19 @@ import com.wiki.dev.security.JwtProvider;
 import com.wiki.dev.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -108,11 +110,24 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public User getCurrentUser() {
+    public ResponseEntity<Map<Object, Object>> getCurrentUser() {
+        Map<Object, Object> responseBody = new HashMap<>();
+
         org.springframework.security.core.userdetails.User principal
                 = (org.springframework.security.core.userdetails.User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return userRepository.findByEmail(principal.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found with : " + principal.getUsername()));
+        Optional<User> optionalUser = userRepository.findByEmail(principal.getUsername());
+
+        if (optionalUser.isEmpty()) {
+            responseBody.put("data", null);
+            responseBody.put("error", "user not exist !");
+            return ResponseEntity.status(400).body(responseBody);
+        }
+
+        responseBody.put("data", optionalUser.get());
+        responseBody.put("error", null);
+
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
