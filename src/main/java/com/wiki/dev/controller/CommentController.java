@@ -3,13 +3,11 @@ package com.wiki.dev.controller;
 import com.wiki.dev.dto.CommentsDto;
 import com.wiki.dev.service.CommentService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-import static org.springframework.http.ResponseEntity.status;
+import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/comments")
@@ -18,18 +16,27 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
-    public ResponseEntity<Void> createComment(@RequestBody CommentsDto commentsDto) {
-        commentService.createComment(commentsDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<Map<Object, Object>> createComment(@RequestBody @Valid CommentsDto commentsDto) {
+        return commentService.createComment(commentsDto);
     }
 
     @GetMapping("/by-post/{postId}")
-    public ResponseEntity<List<CommentsDto>> getAllCommentsForPost(@PathVariable Long postId) {
-        return status(HttpStatus.OK).body(commentService.getCommentByPost(postId));
+    public ResponseEntity<Map<Object, Object>> getAllCommentsByPost(@PathVariable Long postId) {
+        return commentService.getAllCommentByPost(postId);
     }
 
     @GetMapping("/by-user/{username}")
-    public ResponseEntity<List<CommentsDto>> getAllCommentsForUser(@PathVariable String username) {
-        return status(HttpStatus.OK).body(commentService.getCommentsByUser(username));
+    public ResponseEntity<Map<Object, Object>> getAllCommentsByUser(@PathVariable String username) {
+        return commentService.getAllCommentsByUser(username);
+    }
+
+    @PatchMapping
+    public ResponseEntity<Map<Object, Object>> updateComment(@RequestBody @Valid CommentsDto commentsDto) {
+        return commentService.updateComment(commentsDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<Object, Object>> deleteCommentById(@PathVariable Long id) {
+        return commentService.deleteCommentById(id);
     }
 }
