@@ -31,7 +31,7 @@ public class CategoryService {
         if (categories.isEmpty()) {
             responseBody.put("data", "category is empty, you need to add categories at least one");
             responseBody.put("error", null);
-            return ResponseEntity.ok().body(responseBody);
+            return ResponseEntity.status(404).body(responseBody);
         }
 
         List<CategoryDto> tempCategories = categories.stream().map(categoryMapper::mapCategoryToDto).collect(Collectors.toList());
@@ -39,7 +39,7 @@ public class CategoryService {
         responseBody.put("data", tempCategories);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional
@@ -51,7 +51,7 @@ public class CategoryService {
         responseBody.put("data", category);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(201).body(responseBody);
     }
 
     @Transactional
@@ -63,14 +63,14 @@ public class CategoryService {
         if (category.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "category not exist ! ");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         CategoryDto tempCategory = (CategoryDto) category.stream().map(categoryMapper::mapCategoryToDto);
         responseBody.put("data", tempCategory);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional
@@ -82,7 +82,7 @@ public class CategoryService {
         if (category.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "category not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         Category tempCategory = categoryMapper.mapDtoToCategory(categoryDto);
@@ -92,7 +92,7 @@ public class CategoryService {
         responseBody.put("data", tempCategory);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional
@@ -104,7 +104,7 @@ public class CategoryService {
         if (category.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "category not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         Category tempCategory = category.get();
@@ -114,7 +114,7 @@ public class CategoryService {
         responseBody.put("data", categoryDto.getName() + " is deleted !");
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
 }
