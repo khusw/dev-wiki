@@ -11,6 +11,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.wiki.dev.entity.VoteType.DOWNVOTE;
@@ -57,7 +58,9 @@ public abstract class PostMapper {
 
     private boolean checkVoteType(Post post, VoteType voteType) {
         if (authService.isLoggedIn()) {
-            Optional<Vote> voteForPostByUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post, authService.getCurrentUser());
+            User user = (User) Objects.requireNonNull(authService.getCurrentUser().getBody()).get("data");
+
+            Optional<Vote> voteForPostByUser = voteRepository.findTopByPostAndUserOrderByVoteIdDesc(post, user);
 
             return voteForPostByUser.filter(vote -> vote.getVoteType().equals(voteType)).isPresent();
         }

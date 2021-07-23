@@ -15,10 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,7 +39,7 @@ public class PostService {
         if (optionalPost.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "optionalPost not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         PostResponse postResponse = (PostResponse) optionalPost.stream().map(postMapper::mapPostToDto);
@@ -50,7 +47,7 @@ public class PostService {
         responseBody.put("data", postResponse);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional(readOnly = true)
@@ -62,7 +59,7 @@ public class PostService {
         if (posts.isEmpty()) {
             responseBody.put("data", "post is empty, you need to add post at least one !");
             responseBody.put("error", null);
-            return ResponseEntity.ok().body(responseBody);
+            return ResponseEntity.status(404).body(responseBody);
         }
 
         List<PostResponse> tempPosts = posts.stream().map(postMapper::mapPostToDto).collect(Collectors.toList());
@@ -70,7 +67,7 @@ public class PostService {
         responseBody.put("data", tempPosts);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional
@@ -82,10 +79,10 @@ public class PostService {
         if (category.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "category not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
-        User user = authService.getCurrentUser();
+        User user = (User) Objects.requireNonNull(authService.getCurrentUser().getBody()).get("data");
         Category tempCategory = category.get();
 
         Post post = postRepository.save(postMapper.mapToPost(postRequest, tempCategory, user));
@@ -93,7 +90,7 @@ public class PostService {
         responseBody.put("data", post);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(201).body(responseBody);
     }
 
     @Transactional(readOnly = true)
@@ -105,7 +102,7 @@ public class PostService {
         if (category.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "category not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         List<PostResponse> postResponses = postRepository.findAllByCategory(category.get())
@@ -114,7 +111,7 @@ public class PostService {
         responseBody.put("data", postResponses);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional(readOnly = true)
@@ -126,7 +123,7 @@ public class PostService {
         if (user.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "user not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         List<PostResponse> postResponses = postRepository.findByUser(user.get())
@@ -135,7 +132,7 @@ public class PostService {
         responseBody.put("data", postResponses);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional
@@ -147,7 +144,7 @@ public class PostService {
         if (optionalPost.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "post not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         Post post = optionalPost.get();
@@ -155,7 +152,7 @@ public class PostService {
         if (postRequest.getPostName() == null) {
             responseBody.put("data", null);
             responseBody.put("error", "post name cannot be null !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         post.setPostName(postRequest.getPostName());
@@ -163,18 +160,18 @@ public class PostService {
         if (postRequest.getCategoryName() == null) {
             responseBody.put("data", null);
             responseBody.put("error", "you must set category for your post !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         if (postRequest.getUrl() != null) post.setUrl(postRequest.getUrl());
 
         if (postRequest.getDescription() != null) post.setDescription(postRequest.getDescription());
 
-        User user = authService.getCurrentUser();
+        User user = (User) Objects.requireNonNull(authService.getCurrentUser().getBody()).get("data");
         if (!user.getEmail().equals(post.getUser().getEmail())) {
             responseBody.put("data", null);
             responseBody.put("error", "post only can be updated by creator !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(401).body(responseBody);
         }
 
         post.setUser(user);
@@ -184,7 +181,7 @@ public class PostService {
         responseBody.put("data", postResponse);
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 
     @Transactional
@@ -196,7 +193,7 @@ public class PostService {
         if (optionalPost.isEmpty()) {
             responseBody.put("data", null);
             responseBody.put("error", "post not exist !");
-            return ResponseEntity.badRequest().body(responseBody);
+            return ResponseEntity.status(400).body(responseBody);
         }
 
         postRepository.deleteById(id);
@@ -204,6 +201,6 @@ public class PostService {
         responseBody.put("data", optionalPost.get().getPostName() + " is deleted !");
         responseBody.put("error", null);
 
-        return ResponseEntity.ok().body(responseBody);
+        return ResponseEntity.status(200).body(responseBody);
     }
 }
