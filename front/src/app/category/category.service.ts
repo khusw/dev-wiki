@@ -11,10 +11,10 @@ export class CategoryService {
   constructor(private httpClient: HttpClient) { }
 
   getAllCategories(): Observable<any> {
-    return this.httpClient.get("http://localhost:8080/api/categories");
+    return this.httpClient.get("http://localhost:8080/api/categories/");
   }
 
   createCategory(categoryModel: CategoryModel): Observable<any> {
-    return this.httpClient.post("http://localhost:8080/api/categories", categoryModel);
+    return this.httpClient.post("http://localhost:8080/api/categories/", categoryModel);
   }
 }
