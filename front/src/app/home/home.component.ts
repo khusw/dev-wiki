@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PostModel } from "../post/post-model";
 import { PostService } from "../post/post.service";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
@@ -12,9 +13,7 @@ export class HomeComponent implements OnInit {
   posts: Array<PostModel> = [];
 
   constructor(private postService: PostService) {
-    this.postService.getAllPosts().subscribe(post => {
-      this.posts = post;
-    })
+    this.postService.getAllPosts().subscribe(post => this.posts = post['data'] );
   }
 
   ngOnInit(): void {
