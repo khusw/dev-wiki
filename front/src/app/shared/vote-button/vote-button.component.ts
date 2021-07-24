@@ -51,7 +51,7 @@ export class VoteButtonComponent implements OnInit {
   }
 
   private vote() {
-    this.votePayload.postId = this.post.id;
+    this.votePayload.postId = this.post.postId;
     this.voteService.vote(this.votePayload).subscribe(() => {
       this.updateVoteDetails();
     }, error => {
@@ -61,7 +61,7 @@ export class VoteButtonComponent implements OnInit {
   }
 
   private updateVoteDetails() {
-    this.postService.getPost(this.post.id).subscribe(data => {
+    this.postService.getPost(this.post.postId).subscribe(data => {
       this.post = data;
     });
   }
