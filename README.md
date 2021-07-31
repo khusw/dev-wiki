@@ -1,5 +1,10 @@
-### Dev-Wiki
-Developer Community Web Site
+## Dev Wiki   
+Dev Wiki means Devlopement Wiki and is development community site.   
+The purpose of this project is to create a developer community site.
 
-> Tools
-- Spring Boot, Angular
+
+### Techs
+The techniques used in this project are as follows.   
+
+- BE : Spring Boot
+- FE : Angular
