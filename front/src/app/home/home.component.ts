@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PostModel } from "../post/post-model";
 import { PostService } from "../post/post.service";
-import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-home',
