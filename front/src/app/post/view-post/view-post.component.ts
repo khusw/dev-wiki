@@ -20,7 +20,7 @@ export class ViewPostComponent implements OnInit {
   commentPayload: CommentPayload;
   comments: CommentPayload[];
 
-  constructor(private postService: PostService, private activateRoute: ActivatedRoute, private commentService: CommentService, private router: Router) {
+  constructor(private postService: PostService, private activateRoute: ActivatedRoute, private commentService: CommentService) {
     this.postId = this.activateRoute.snapshot.params.id;
 
     this.commentForm = new FormGroup({
@@ -33,7 +33,7 @@ export class ViewPostComponent implements OnInit {
     }
 
     this.postService.getPost(this.postId).subscribe(data => {
-      this.post = data;
+      this.post = data['data'];
     }, error => {
       throwError(error);
     });
@@ -56,7 +56,7 @@ export class ViewPostComponent implements OnInit {
 
   private getPostById() {
     this.postService.getPost(this.postId).subscribe(data => {
-      this.post = data;
+      this.post = data['data'];
     }, error => {
       throwError(error);
     });
@@ -64,7 +64,7 @@ export class ViewPostComponent implements OnInit {
 
   private getCommentsForPost() {
     this.commentService.getAllCommentsForPost(this.postId).subscribe(data => {
-      this.comments = data;
+      this.comments = data['data'];
     }, error => {
       throwError(error);
     });
