@@ -1,5 +1,4 @@
 ## Dev Wiki   
-![GitHub repo size](https://img.shields.io/github/repo-size/dy-shin/dev-wiki)  
 Dev Wiki means Devlopement Wiki and is development community site.   
 The purpose of this project is to create a developer community site.
 
