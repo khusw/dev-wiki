@@ -42,7 +42,8 @@ public class PostService {
             return ResponseEntity.status(400).body(responseBody);
         }
 
-        PostResponse postResponse = (PostResponse) optionalPost.stream().map(postMapper::mapPostToDto);
+        Post post = optionalPost.get();
+        PostResponse postResponse = postMapper.mapPostToDto(post);
 
         responseBody.put("data", postResponse);
         responseBody.put("error", null);

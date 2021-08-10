@@ -8,18 +8,18 @@
     </span>
     <hr />
     <div class="post-title">
-      <a class="postname" href="{{post.url}}">{{post.postName}}</a>
+      <a class="postname" (click)="goToPost(post.postId)">{{post.postName}}</a>
     </div>
     <div>
       <p class="post-text" [innerHTML]="post.description"></p>
     </div>
     <hr />
     <span>
-      <a class="btnCommments" role="button" href="{{post.url}}">
+      <a class="btnCommments" role="button" (click)="goToPost(post.postId)">
         <fa-icon [icon]="faComments"></fa-icon>
         Comments({{post.commentCount}})
       </a>
-      <button class="login" (click)="goToPost(post.id)">
+      <button class="login" (click)="goToPost(post.postId)">
         Read Post
       </button>
     </span>
